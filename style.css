@@ -1,0 +1,151 @@
+html,
+body {
+  height: 100%;
+  width: 100%;
+  padding: 10px;
+}
+
+body {
+  font-family: 'Merriweather', 'Helvetica Neue', Arial, sans-serif;
+}
+
+hr {
+  border-color: #F05F40;
+  border-width: 3px;
+  max-width: 50px;
+}
+
+hr.light {
+  border-color: white;
+}
+
+a {
+  -webkit-transition: all 0.35s;
+  -moz-transition: all 0.35s;
+  transition: all 0.35s;
+  color: #F05F40;
+}
+
+a:hover,
+a:focus {
+  color: #eb3812;
+}
+
+h1,
+h2,
+h3,
+h4,
+h5,
+h6 {
+  font-family: 'Open Sans', 'Helvetica Neue', Arial, sans-serif;
+}
+
+.specialText {
+  color: saddlebrown;
+}
+
+header {
+  position: fixed;
+  color: #666;
+  background-color: rgba(50, 250, 250, 1) !important;
+}
+
+.commandBar {
+  border: 0.25pt dotted rgb(100, 100, 100);
+  background-color: rgba(220, 230, 210, 0.5);
+  border-radius: 10px;
+  padding: 6px;
+  margin: 5px;
+  margin-top: 20px;
+  font-size: 32pt;
+  color: magenta;
+  display: flex;
+  flex-direction: row-reverse;
+}
+
+.commandBar span {
+  cursor: pointer;
+}
+
+section {
+  clear: both;
+  display: block;
+}
+
+.block {
+  margin-left: 20px;
+  padding-left: 5px;
+  border-left: 1px solid rgb(100, 100, 100);
+}
+
+p,
+dl,
+li {
+  font-size: 10pt;
+  margin-bottom: 20px;
+}
+
+.form label {
+  margin: 5px 12px 5px 0px;
+  display: inline-flex;
+  min-width: 380px;
+  flex-direction: row;
+  justify-content: space-between;
+  font-weight: normal;
+  align-items: center;
+  font-size: 10pt;
+}
+
+.form input,
+.form option,
+.form select,
+.form textarea {
+  margin: 10px;
+  padding: 3px;
+  line-height: 16pt;
+  font-family: 'Open Sans', 'Helvetica Neue', Arial, sans-serif;
+  font-size: 14pt;
+  border: 0.5pt solid #666;
+  border-radius: 3pt;
+}
+
+.form td .fill {
+  width: 100%;
+  margin: 0;
+}
+
+.form table {
+  line-height: 13pt;
+  font-family: 'Open Sans', 'Helvetica Neue', Arial, sans-serif;
+  font-size: 10pt;
+  padding: 2px;
+  margin: 0;
+}
+
+.form input:focus,
+.form textarea:focus {
+  background-color: rgba(250, 240, 0, 0.5);
+  color: navy;
+}
+
+.count input {
+  width: 4em;
+  margin: 1px;
+}
+
+.flexBox {
+  display: inline-flex;
+  flex-direction: row;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.form table td,
+.form table th {
+  padding: 1px !important;
+}
+
+.fa-trash:hover {
+  color: red;
+  cursor: pointer;
+}
