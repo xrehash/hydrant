@@ -55,6 +55,8 @@
   <div class="commandBar">
     <span id="saveBtn" class="fa fa-check" data-bind="click:saveCommand"></span>
   </div>
+  <p data-bind="text:_id"></p>
+  <p data-bind="text:_rev"></p>
   <section id="cover">
     <div class="headerFields form">
       <h2>Cover Data</h2>
@@ -106,8 +108,7 @@
               <td colspan="4"><button class="fill" data-bind="click:addActivityRow">ADD A ROW</button></td>
             </tr>
           </table>
-          <label> Upload Activity List <input id="activityFile" name="activityFile" type="file" /> <button data-bind="click:activityFileUpload"><span class="fa fa-upload"></span></button> </label>
-          <label> Uploaded File <span data-bind="text:uploadedFileName"></span></label>
+
         </div>
       </div>
     </div>
@@ -118,12 +119,21 @@
   <section>
     <h2>Outage Request</h2>
   </section>
-  <section>
+  <section class="form">
+    <h2>Attachments</h2>
+    <div class="block">
+      <label> Upload Attachment <input id="activityFile" name="activityFile" type="file" /> <button data-bind="click:activityFileUpload"><span class="fa fa-upload"></span></button> </label>
+      <ul data-bind="foreach:attached">
+        <li><label> <span data-bind="text:$data"></span></label></li>
+      </ul>
+    </div>
+  </section>
+  <!--<section>
     <h2>Tailboard Conference</h2>
   </section>
   <section>
     <h2>Activity CheckList</h2>
-  </section>
+  </section>-->
 </body>
 <!-- jQuery -->
 <script src="https://code.jquery.com/jquery-2.2.1.min.js" integrity="sha256-gvQgAFzTH6trSrAWoH1iPo9Xc96QxSZ3feW6kem+O00="

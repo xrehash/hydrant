@@ -35,8 +35,15 @@ var Portal = new(function () {
   });
 
   self.write = function (data) {
-    console.log(data)
+    // console.log(data)
     return self.hostDb.post(data)
+  };
+  self.save = function (doc) {
+    console.log("save called")
+    return self.hostDb.put(doc)
+  };
+  self.get = function (id) {
+    return self.hostDb.get(id)
   };
 
   self.postFn = function post(url, data) {
