@@ -15,7 +15,7 @@ var OutageRecordT = {
 
     self.scopeTermOptions = ["JPS Staff Crew", "Distribution Contractor", "Substation Contractor", "Transmission Contractor"]
     self.CaseCover = ko.observable({
-      caseId: ko.observable(Math.floor((Date.now() * Math.random()) % 234876599)),
+      caseId: ko.observable('WX' + Math.floor((Date.now() * Math.random()) % 24599)),
       recordDate: ko.observable((new Date()).toISOString().substring(0, 10)),
       outageOwner: ko.observable(""),
       businessUnit: ko.observable(""),
@@ -37,6 +37,8 @@ var OutageRecordT = {
       requirementsSafety: ko.observableArray(),
       requirementsSkills: ko.observableArray(),
       requirementsEquipment: ko.observableArray(),
+      uploadedFile: null,
+      uploadedFileName: ko.observable(),
       addActivityRow: function () {
         self.Scope().activityList.push({
           task: 0,
@@ -47,12 +49,39 @@ var OutageRecordT = {
       },
       removeActivityRow: function (data) {
         self.Scope().activityList.remove(data)
+      },
+      activityFileUpload: function (data) {
+        if (window.File && window.FileReader) {
+          var files = document.getElementById("activityFile").files
+          if (files.length > 0) {
+            var file = files[0]
+            console.log(file.name, file.size)
+            var reader = new FileReader()
+            reader.onload = function (evt) {
+              //console.log(evt.target.result)
+              self.Scope().uploadedFileName(file.name)
+              self.Scope().uploadedFile = evt.target.result
+            }
+            reader.readAsBinaryString(file)
+          }
+        }
       }
     })
 
     self.saveCommand = function () {
+      function stripFunctions(obj) {
+        var names = Object.getOwnPropertyNames(obj);
+        for (let i = 0; i < names.length; i++) {
+          if (typeof obj[names[i]] == 'function') {
+            delete obj[names[i]]
+          }
+        }
+        return obj
+      }
+
       var record = {
-        cover: ko.toJS(self.CaseCover)
+        cover: stripFunctions(ko.toJS(self.CaseCover)),
+        scope: stripFunctions(ko.toJS(self.Scope))
       }
       console.log("Save Command Issued", record)
       Portal.saveDataFn(record)

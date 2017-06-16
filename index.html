@@ -106,6 +106,8 @@
               <td colspan="4"><button class="fill" data-bind="click:addActivityRow">ADD A ROW</button></td>
             </tr>
           </table>
+          <label> Upload Activity List <input id="activityFile" name="activityFile" type="file" /> <button data-bind="click:activityFileUpload"><span class="fa fa-upload"></span></button> </label>
+          <label> Uploaded File <span data-bind="text:uploadedFileName"></span></label>
         </div>
       </div>
     </div>
@@ -136,6 +138,8 @@
 
 <!-- FontAwesome CDN -->
 <script src="https://use.fontawesome.com/fcb170d64e.js"></script>
+
+<script src="pouchdb-6.2.0.min.js"></script>
 <script src="knockout-3.4.2.js"></script>
 <script src="data.js"></script>
 <script src="orecord.js"></script>
