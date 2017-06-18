@@ -16,7 +16,13 @@ var OutageRecordT = {
     self.displayCaseUI = ko.observable(false)
     self.searchTerm = ko.observable()
     self.searchResults = ko.observableArray()
-
+    self.searchKeyPress = function (datum, event) {
+      //console.log(event)
+      if (event.keyCode == 13) {
+        self.searchCommand()
+      }
+      return true;
+    }
     self.scopeTermOptions = ["JPS Staff Crew", "Distribution Contractor", "Substation Contractor", "Transmission Contractor"]
 
     self._id = ko.observable()
@@ -31,10 +37,7 @@ var OutageRecordT = {
     })
 
     self.init = function () {
-      self._id = ko.observable((new Date()).toISOString())
-      self._rev = ko.observable()
-      self._attachments = ko.observable({})
-      self.adds = ko.observableArray()
+      self._id((new Date()).toISOString())
       self.CaseCover({
         caseId: ko.observable('WX' + Math.floor((Date.now() * Math.random()) % 24599)),
         recordDate: ko.observable((new Date()).toISOString().substring(0, 10)),
@@ -61,6 +64,52 @@ var OutageRecordT = {
         requirementsEquipment: ko.observableArray(),
         notes: ko.observable(),
         uploadedFileName: ko.observable(),
+        addActivityRow: function () {
+          self.Scope().activityList.push({
+            task: 0,
+            work: "",
+            duration: "",
+            worker: ""
+          })
+        },
+        removeActivityRow: function (data) {
+          self.Scope().activityList.remove(data)
+        }
+      })
+    }
+    self.load = function (doc) {
+      self._id(doc._id)
+      self._rev(doc._rev)
+      self._attachments(doc._attachments)
+      //self.adds = ko.observableArray()
+
+      self.CaseCover({
+        caseId: ko.observable(doc.cover.caseId),
+        recordDate: ko.observable(doc.cover.recordDate),
+        outageOwner: ko.observable(doc.cover.outageOwner),
+        businessUnit: ko.observable(doc.cover.businessUnit),
+        costCenter: ko.observable(doc.cover.costCenter),
+        activityDate: ko.observable(doc.cover.activityDate),
+        activityDuration: ko.observable(doc.cover.activityDuration),
+        fpc: ko.observable(doc.cover.fpc),
+        assignee: ko.observable(doc.cover.assignee),
+        outageID: ko.observable(doc.cover.outageID),
+        activityDescription: ko.observable(doc.cover.activityDescription),
+        address: ko.observable(doc.cover.address),
+        coords: ko.computed(function () {
+          var spot = self.geoLocation()
+          return spot ? `${spot.coords.latitude},${spot.coords.longitude}` : ''
+        })
+      })
+
+      self.Scope({
+        terms: ko.observable(doc.scope.terms),
+        activityList: ko.observableArray(doc.scope.activityList),
+        requirementsSafety: ko.observableArray(doc.scope.requirementsSafety),
+        requirementsSkills: ko.observableArray(doc.scope.requirementsSkills),
+        requirementsEquipment: ko.observableArray(doc.scope.requirementsEquipment),
+        notes: ko.observable(doc.scope.notes),
+        uploadedFileName: ko.observable(doc.scope.uploadedFileName),
         addActivityRow: function () {
           self.Scope().activityList.push({
             task: 0,
@@ -115,7 +164,9 @@ var OutageRecordT = {
       var TargetFields = ["caseId", "outageID", "outageOwner", "assignee", "activityDate"]
       var term = self.searchTerm().toLowerCase()
       var search = Portal.caseQuery(term);
+
       search.then(function (result) {
+        //console.log(result)
         self.searchResults()
         var hits = []
         result.rows.forEach(function (r, ri) {
@@ -138,11 +189,28 @@ var OutageRecordT = {
           return {
             score: e.score,
             value: result.rows[e.rindex].value,
-            id: e.ID
+            id: result.rows[e.rindex].id
           }
         }))
-        //console.log("hits", hits)
+        if (hits.length == 0)
+          swal({
+            title: "Search",
+            text: `No results matching search.`,
+            timer: 2000
+          });
+        //console.log(result)
       })
+    }
+    self.loadCommand = function (target) {
+      console.log("target", target)
+      var bag = Portal.get(target.id)
+      bag.then(function (doc) {
+        console.log(doc)
+        self.load(doc)
+
+        self.displayCaseUI(true)
+      })
+
     }
 
     self.saveCommand = function () {
