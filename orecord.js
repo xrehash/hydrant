@@ -11,53 +11,70 @@ var OutageRecordT = {
       self.geoLocation(ok)
     }, function (err) {
       console.log(err)
-    })
-    self._id = ko.observable((new Date()).toISOString())
+    });
+
+    self.displayCaseUI = ko.observable(false)
+    self.searchTerm = ko.observable()
+    self.searchResults = ko.observableArray()
+
+    self.scopeTermOptions = ["JPS Staff Crew", "Distribution Contractor", "Substation Contractor", "Transmission Contractor"]
+
+    self._id = ko.observable()
     self._rev = ko.observable()
     self._attachments = ko.observable({})
     self.adds = ko.observableArray()
+    self.CaseCover = ko.observable()
+    self.Scope = ko.observable()
+
     self.attached = ko.computed(function () {
       return Object.getOwnPropertyNames(self._attachments())
     })
 
-    self.scopeTermOptions = ["JPS Staff Crew", "Distribution Contractor", "Substation Contractor", "Transmission Contractor"]
-    self.CaseCover = ko.observable({
-      caseId: ko.observable('WX' + Math.floor((Date.now() * Math.random()) % 24599)),
-      recordDate: ko.observable((new Date()).toISOString().substring(0, 10)),
-      outageOwner: ko.observable(""),
-      businessUnit: ko.observable(""),
-      costCenter: ko.observable(""),
-      activityDate: ko.observable((new Date(Date.now() + (42 * 24 * 3600000))).toISOString().substring(0, 10)),
-      activityDuration: ko.observable(""),
-      fpc: ko.observable(""),
-      assignee: ko.observable(""),
-      activityDescription: ko.observable(""),
-      address: ko.observable(""),
-      coords: ko.computed(function () {
-        var spot = self.geoLocation()
-        return spot ? `${spot.coords.latitude},${spot.coords.longitude}` : ''
-      })
-    })
-    self.Scope = ko.observable({
-      terms: ko.observable("JPS Crew"),
-      activityList: ko.observableArray([]),
-      requirementsSafety: ko.observableArray(),
-      requirementsSkills: ko.observableArray(),
-      requirementsEquipment: ko.observableArray(),
-      uploadedFile: null,
-      uploadedFileName: ko.observable(),
-      addActivityRow: function () {
-        self.Scope().activityList.push({
-          task: 0,
-          work: "",
-          duration: "",
-          worker: ""
+    self.init = function () {
+      self._id = ko.observable((new Date()).toISOString())
+      self._rev = ko.observable()
+      self._attachments = ko.observable({})
+      self.adds = ko.observableArray()
+      self.CaseCover({
+        caseId: ko.observable('WX' + Math.floor((Date.now() * Math.random()) % 24599)),
+        recordDate: ko.observable((new Date()).toISOString().substring(0, 10)),
+        outageOwner: ko.observable(""),
+        businessUnit: ko.observable(""),
+        costCenter: ko.observable(""),
+        activityDate: ko.observable((new Date(Date.now() + (42 * 24 * 3600000))).toISOString().substring(0, 10)),
+        activityDuration: ko.observable(""),
+        fpc: ko.observable(""),
+        assignee: ko.observable(""),
+        outageID: ko.observable(""),
+        activityDescription: ko.observable(""),
+        address: ko.observable(""),
+        coords: ko.computed(function () {
+          var spot = self.geoLocation()
+          return spot ? `${spot.coords.latitude},${spot.coords.longitude}` : ''
         })
-      },
-      removeActivityRow: function (data) {
-        self.Scope().activityList.remove(data)
-      }
-    })
+      })
+      self.Scope({
+        terms: ko.observable(),
+        activityList: ko.observableArray([]),
+        requirementsSafety: ko.observableArray(),
+        requirementsSkills: ko.observableArray(),
+        requirementsEquipment: ko.observableArray(),
+        notes: ko.observable(),
+        uploadedFileName: ko.observable(),
+        addActivityRow: function () {
+          self.Scope().activityList.push({
+            task: 0,
+            work: "",
+            duration: "",
+            worker: ""
+          })
+        },
+        removeActivityRow: function (data) {
+          self.Scope().activityList.remove(data)
+        }
+      })
+    }
+
     self.activityFileUpload = function (data) {
       if (window.File && window.FileReader) {
         var fileInput = document.getElementById("activityFile")
@@ -80,6 +97,52 @@ var OutageRecordT = {
           reader.readAsBinaryString(file)
         }
       }
+    }
+
+    self.newFileCommand = function () {
+      self.init()
+      self.displayCaseUI(true)
+    }
+    self.cancelCommand = function () {
+      self.displayCaseUI(false)
+    }
+    self.closeCommand = function () {
+      self.saveCommand()
+      self.displayCaseUI(false)
+    }
+
+    self.searchCommand = function () {
+      var TargetFields = ["caseId", "outageID", "outageOwner", "assignee", "activityDate"]
+      var term = self.searchTerm().toLowerCase()
+      var search = Portal.caseQuery(term);
+      search.then(function (result) {
+        self.searchResults()
+        var hits = []
+        result.rows.forEach(function (r, ri) {
+          var sct = 0
+          for (let i = 0; i < TargetFields.length; i++) {
+            if (r.value.hasOwnProperty(TargetFields[i]) && r.value[TargetFields[i]].toString().toLowerCase().includes(term)) {
+              sct += (TargetFields.length - i)
+            }
+          }
+          if (sct > 0)
+            hits.push({
+              rindex: ri,
+              score: sct
+            })
+        })
+        hits.sort(function (a, b) {
+          return (b.score - a.score)
+        })
+        self.searchResults(hits.map(function (e) {
+          return {
+            score: e.score,
+            value: result.rows[e.rindex].value,
+            id: e.ID
+          }
+        }))
+        //console.log("hits", hits)
+      })
     }
 
     self.saveCommand = function () {
@@ -113,10 +176,15 @@ var OutageRecordT = {
       Portal.save(record).then(function (ans) {
         console.log(ans)
         self._rev(ans.rev);
-        alert("Saved completed")
         self._attachments(self._attachments())
+        swal({
+          title: "Save Successful",
+          text: `Job ${self.CaseCover().caseId()} was saved.`,
+          timer: 2000
+        });
       })
     }
 
+    self.init()
   }
 }

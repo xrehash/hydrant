@@ -10,12 +10,49 @@ const REMOTEDB_URL = "https://couchdb-076880.smileupps.com/outage";
 
 ////////////////////////////////////////////////////////////////////
 
+if (!String.prototype.includes) {
+  String.prototype.includes = function (search, start) {
+    'use strict';
+    if (typeof start !== 'number') {
+      start = 0;
+    }
+
+    if (start + search.length > this.length) {
+      return false;
+    } else {
+      return this.indexOf(search, start) !== -1;
+    }
+  };
+}
+
 var Portal = new(function () {
   var self = this;
   //PouchDB init
   self.hostDb = new PouchDB("hydrant-outages")
   self.hostDb.info().then(function (info) {
     console.log("PouchDB Available", info)
+    var ddoc = {
+      _id: '_design/search',
+      views: {
+        cover: {
+          map: function (doc) {
+            emit(doc.cover.caseId, doc.cover);
+          }.toString()
+        }
+      }
+    };
+    // save it
+    self.hostDb.put(ddoc).then(function () {
+      // success!
+      console.log("created index")
+    }).catch(function (err) {
+      // some error (maybe a 409, because it already exists?)
+      if (err.status != 409) {
+        console.log(err)
+      }
+    });
+
+
   }).catch(function (err) {
     console.log(err)
   });
@@ -33,6 +70,12 @@ var Portal = new(function () {
     live: true,
     retry: true
   });
+
+  self.caseQuery = function (term) {
+    return self.hostDb.query('search/cover', {
+      limit: 100
+    })
+  }
 
   self.write = function (data) {
     // console.log(data)
