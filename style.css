@@ -1,3 +1,11 @@
+@font-face {
+  font-family: 'Michroma';
+  font-style: normal;
+  font-weight: 400;
+  src: local('Michroma'), url('./michroma.ttf');
+  unicode-range: U+0000-00FF, U+0131, U+0152-0153, U+02C6, U+02DA, U+02DC, U+2000-206F, U+2074, U+20AC, U+2212, U+2215;
+}
+
 html,
 body {
   height: 100%;
@@ -45,26 +53,52 @@ h6 {
 }
 
 header {
-  position: fixed;
-  color: #666;
-  background-color: rgba(50, 250, 250, 1) !important;
+  margin-top: 0;
+  /*background-image: url("capture2.png");*/
+}
+
+header h1 {
+  font-family: Michroma, Righteous, Impact, Haettenschweiler, 'Arial Narrow Bold', sans-serif;
+  color: peru;
 }
 
 .commandBar {
+  position: static;
+  top: 0;
+  width: auto;
+  margin-left: 0;
+  margin-right: 0;
+  margin: 5px;
+  margin-top: 2px;
+}
+
+.commandBar>div {
+  display: flex;
+  flex-direction: row;
+  justify-content: space-between;
   border: 0.25pt dotted rgb(100, 100, 100);
   background-color: rgba(220, 230, 210, 0.5);
   border-radius: 10px;
   padding: 6px;
-  margin: 5px;
-  margin-top: 20px;
-  font-size: 32pt;
-  color: magenta;
-  display: flex;
-  flex-direction: row-reverse;
+  vertical-align: middle;
+}
+
+.commandBar p {
+  margin: 0;
+  padding: 0;
 }
 
 .commandBar span {
+  font-size: 32pt;
+  color: magenta;
   cursor: pointer;
+  align-items: center;
+  margin: 0;
+  padding: 0;
+}
+
+.commandBar span:hover {
+  color: lime;
 }
 
 section {
@@ -99,7 +133,8 @@ li {
 .form input,
 .form option,
 .form select,
-.form textarea {
+.form textarea,
+.commandBar input[type='text'] {
   margin: 10px;
   padding: 3px;
   line-height: 16pt;
@@ -107,6 +142,11 @@ li {
   font-size: 14pt;
   border: 0.5pt solid #666;
   border-radius: 3pt;
+}
+
+.commandBar input[type='text'] {
+  font-size: 20pt;
+  border-style: hidden;
 }
 
 .form td .fill {
@@ -147,5 +187,34 @@ li {
 
 .fa-trash:hover {
   color: red;
+  cursor: pointer;
+}
+
+#searchResults {
+  position: relative;
+  left: 0px;
+  right: 0px;
+  width: auto;
+}
+
+#searchResults table {
+  width: 100%;
+  border: 0.5pt solid #ccc;
+  padding: 3px;
+  font-family: 'Open Sans', 'Helvetica Neue', Arial, sans-serif;
+  font-size: 14pt;
+}
+
+#searchResults td,
+#searchResults th,
+#searchResults tr {
+  padding: 4px;
+  border-collapse: collapse;
+  border: 0.5pt dotted #666;
+}
+
+#searchResults tbody tr:hover {
+  color: white;
+  background-color: rgb(20, 50, 200);
   cursor: pointer;
 }

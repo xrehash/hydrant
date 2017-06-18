@@ -25,6 +25,7 @@
   <!-- Theme CSS -->
   <link href="style.css" rel="stylesheet">
   <link href="font-awesome.css" rel="stylesheet">
+  <link href="sweetalert.css" rel="stylesheet">
   <!-- HTML5 Shim and Respond.js IE8 support of HTML5 elements and media queries -->
   <!-- WARNING: Respond.js doesn't work if you view the page via file:// -->
   <!--[if lt IE 9]>
@@ -36,7 +37,8 @@
 
 <body>
   <header>
-    <nav class="navbar navbar-fixed-top">
+    <h1>Outage Supplementary Records</h1>
+    <!--<nav class="navbar navbar-fixed-top">
       <div class="container-fluid">
         <div class="navbar-header">
           <button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-target="#navbar-1">
@@ -50,99 +52,150 @@
             <li><a href="#scope" class="page-scroll">Scope</a></li>
           </ul>
         </div>
-    </nav>
+    </nav>-->
   </header>
   <div class="commandBar">
-    <span id="saveBtn" class="fa fa-check" data-bind="click:saveCommand"></span>
+    <div>
+      <p data-bind="visible:(!displayCaseUI())"><span id="newBtn" title="New Outage Case" class="fa fa-file" data-bind="visible:(!displayCaseUI()),click:newFileCommand"></span></p>
+      <p data-bind="visible:(!displayCaseUI())">
+        <input type="text" data-bind="textInput:searchTerm,event:{keypress:searchKeyPress}" /><span id="searchBtn" title="Find Case"
+          class="fa fa-search" data-bind="click:searchCommand"></span>
+      </p>
+      <span id="cancelBtn" title="Cancel" class="fa fa-chevron-left" data-bind="visible:displayCaseUI,click:cancelCommand"></span>
+      <span id="saveBtn" title="Save Record" class="fa fa-floppy-o" data-bind="visible:displayCaseUI,click:saveCommand"></span>
+      <span id="closeBtn" title="Close Record" class="fa fa-check" data-bind="visible:displayCaseUI,click:closeCommand"></span>
+    </div>
   </div>
-  <section id="cover">
-    <div class="headerFields form">
-      <h2>Cover Data</h2>
-      <div class="block" data-bind="with:CaseCover">
-        <label> Case Id<input name="caseId" data-bind="value:caseId"  readonly="readonly" /></label>
-        <label> Record Date<input type="date" name="recordDate" data-bind="value:recordDate"  readonly="readonly" value="" /></label>
-        <label> Outage Owner<input type="text" name="outageOwner" data-bind="value:outageOwner"  /></label>
-        <label> Business Unit<input name="businessUnit" data-bind="value:businessUnit"  type="text" /></label>
-        <label> Cost Center<input name="costCenter" data-bind="value:costCenter"  type="number" /></label>
-        <label> Activity Date<input type="date" name="activityDate" data-bind="value:activityDate"  /></label>
-        <label> Activity Duration<input type="text" name="activityDuration" data-bind="value:activityDuration"  /></label>
-        <label> FPC<input type="text" name="fpc" data-bind="value:fpc"  /></label>
-        <label> Assignee<input type="text" name="assignee" data-bind="value:assignee"  /></label>
-        <label> Description<input type="text" name="activityDescription" data-bind="value:activityDescription"  /></label>
-        <div>
-          <h3>Location</h3>
-          <label> Address<textarea name="address" data-bind="value:address" ></textarea></label>
-          <label> Coords <input type="text" name="coords" data-bind="value:coords"  /> </label>
+  <div id="caseUI" data-bind="visible:displayCaseUI">
+    <p data-bind="text:_id"></p>
+    <p data-bind="text:_rev"></p>
+    <section id="cover">
+      <div class="headerFields form">
+        <h2>Cover Data</h2>
+        <div class="block" data-bind="with:CaseCover">
+          <label> Case Id<input name="caseId" data-bind="value:caseId"  readonly="readonly" /></label>
+          <label> Record Date<input type="date" name="recordDate" data-bind="value:recordDate"  readonly="readonly" value="" /></label>
+          <label> Outage Owner<input type="text" name="outageOwner" data-bind="value:outageOwner"  /></label>
+          <label> Business Unit<input name="businessUnit" data-bind="value:businessUnit"  type="text" /></label>
+          <label> Cost Center<input name="costCenter" data-bind="value:costCenter"  type="number" /></label>
+          <label> Activity Date<input type="date" name="activityDate" data-bind="value:activityDate"  /></label>
+          <label> Activity Duration<input type="text" name="activityDuration" data-bind="value:activityDuration"  /></label>
+          <label> FPC<input type="text" name="fpc" data-bind="value:fpc"  /></label>
+          <label> Assignee<input type="text" name="assignee" data-bind="value:assignee"  /></label>
+          <label> Outage Number <input type="text" name="outageID" data-bind="value:outageID" /></label>
+          <label> Description<textarea name="activityDescription" data-bind="value:activityDescription"></textarea></label>
+          <div>
+            <h3>Location</h3>
+            <label> Address<textarea name="address" data-bind="value:address" ></textarea></label>
+            <!--<label> Coords <input type="text" name="coords" data-bind="value:coords"  /> </label>-->
+          </div>
         </div>
       </div>
-    </div>
-  </section>
-  <section id="scope">
-    <div class="form">
-      <h2>Scope of Work</h2>
-      <div class="block" data-bind="with:Scope">
-        <label> Terms<select type="text" name="terms" data-bind="options:$root.scopeTermOptions,valueAllowUnset:true,value:terms"></select></label>
-        <div>
-          <h3>Activity List</h3>
-          <table class="table table-bordered table-compact" title="Activities">
-            <tr>
-              <th class="count">No.</th>
-              <th>Work/Description</th>
-              <th>Duration</th>
-              <th>Assignee/Skill</th>
-            </tr>
-            <tbody data-bind="foreach:activityList">
+    </section>
+    <section id="scope">
+      <div class="form">
+        <h2>Scope of Work</h2>
+        <div class="block" data-bind="with:Scope">
+          <label> Terms<select type="text" name="terms" data-bind="options:$root.scopeTermOptions,valueAllowUnset:true,value:terms"></select></label>
+          <div>
+            <h3>Activity List</h3>
+            <table class="table table-bordered table-compact" title="Activities">
               <tr>
-                <td class="count">
-                  <div class="flexBox">&nbsp;<span class="fa fa-trash" data-bind="click:$parent.removeActivityRow">&nbsp;</span><input data-bind="text:task"
-                    /></div>
-                </td>
-                <td><textarea class="fill" data-bind="value:work"></textarea></td>
-                <td class="count"><input type="text" data-bind="value:duration" /></td>
-                <td><input class="fill" type="text" data-bind="value:worker" /></td>
+                <th class="count">No.</th>
+                <th>Work/Description</th>
+                <th>Duration</th>
+                <th>Assignee/Skill</th>
               </tr>
-            </tbody>
-            <tr>
-              <td colspan="4"><button class="fill" data-bind="click:addActivityRow">ADD A ROW</button></td>
-            </tr>
-          </table>
-          <label> Upload Activity List <input id="activityFile" name="activityFile" type="file" /> <button data-bind="click:activityFileUpload"><span class="fa fa-upload"></span></button> </label>
-          <label> Uploaded File <span data-bind="text:uploadedFileName"></span></label>
+              <tbody data-bind="foreach:activityList">
+                <tr>
+                  <td class="count">
+                    <div class="flexBox">&nbsp;<span class="fa fa-trash" data-bind="click:$parent.removeActivityRow">&nbsp;</span><input data-bind="text:task"
+                      /></div>
+                  </td>
+                  <td><textarea class="fill" data-bind="value:work"></textarea></td>
+                  <td class="count"><input type="text" data-bind="value:duration" /></td>
+                  <td><input class="fill" type="text" data-bind="value:worker" /></td>
+                </tr>
+              </tbody>
+              <tr>
+                <td colspan="4"><button class="fill" data-bind="click:addActivityRow">ADD A ROW</button></td>
+              </tr>
+            </table>
+
+          </div>
+          <label> Notes <textarea name="notes" data-bind="value:notes"></textarea></label>
         </div>
       </div>
-    </div>
-  </section>
-  <section>
-    <h2>Materials</h2>
-  </section>
-  <section>
-    <h2>Outage Request</h2>
-  </section>
-  <section>
+    </section>
+    <section class="form">
+      <h2>Attachments</h2>
+      <div class="block">
+        <label> Upload Attachment <input id="activityFile" name="activityFile" type="file" /> <button data-bind="click:activityFileUpload"><span class="fa fa-upload"></span></button> </label>
+        <hr/>
+        <ul data-bind="foreach:attached">
+          <li><label> <span data-bind="text:$data"></span></label></li>
+        </ul>
+      </div>
+    </section>
+  </div>
+
+  <div id="searchResults" data-bind="visible:((!displayCaseUI()) && searchResults().length)">
+    <h2>Search Results</h2>
+    <table>
+      <thead>
+        <tr>
+          <th>Score</th>
+          <th>Case ID</th>
+          <th>Outage ID</th>
+          <th>Owner</th>
+          <th>Assignee</th>
+          <th>Date</th>
+        </tr>
+      </thead>
+      <tbody data-bind=" foreach:searchResults ">
+        <tr data-bind="click:$root.loadCommand">
+          <td><span class="fa fa-folder-open " data-bind="text:score "></span></td>
+          <td><span data-bind="text:value.caseId "></span></td>
+          <td><span data-bind="text:value.outageID "></span></td>
+          <td><span data-bind="text:value.outageOwner "></span></td>
+          <td><span data-bind="text:value.assignee "></span></td>
+          <td><span data-bind="text:value.activityDate "></span></td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+  <!-- <section>
+      <h2>Materials</h2>
+    </section>
+    <section>
+      <h2>Outage Request</h2>
+    </section>
+    <section>
     <h2>Tailboard Conference</h2>
   </section>
   <section>
     <h2>Activity CheckList</h2>
-  </section>
+  </section>-->
 </body>
 <!-- jQuery -->
-<script src="https://code.jquery.com/jquery-2.2.1.min.js" integrity="sha256-gvQgAFzTH6trSrAWoH1iPo9Xc96QxSZ3feW6kem+O00="
-  crossorigin="anonymous"></script>
+<script src="https://code.jquery.com/jquery-2.2.1.min.js " integrity="sha256-gvQgAFzTH6trSrAWoH1iPo9Xc96QxSZ3feW6kem+O00="
+  crossorigin=" anonymous "></script>
 
 <!-- Bootstrap Core JavaScript -->
-<script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.6/js/bootstrap.min.js" integrity="sha384-0mSbJDEHialfmuBBQP6A4Qrprq5OVfW37PRR3j5ELqxss1yVqOtnepnHVP9aJ7xS"
-  crossorigin="anonymous"></script>
+<script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.6/js/bootstrap.min.js " integrity="sha384-0mSbJDEHialfmuBBQP6A4Qrprq5OVfW37PRR3j5ELqxss1yVqOtnepnHVP9aJ7xS "
+  crossorigin="anonymous "></script>
 
 <!-- Plugin JavaScript -->
-<script src="https://cdnjs.cloudflare.com/ajax/libs/jquery-easing/1.3/jquery.easing.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jquery-easing/1.3/jquery.easing.min.js "></script>
 
 <!-- FontAwesome CDN -->
-<script src="https://use.fontawesome.com/fcb170d64e.js"></script>
+<!--<script src="https://use.fontawesome.com/fcb170d64e.js "></script>-->
 
-<script src="pouchdb-6.2.0.min.js"></script>
-<script src="knockout-3.4.2.js"></script>
-<script src="data.js"></script>
-<script src="orecord.js"></script>
-<script src="client.js"></script>
+<script src="pouchdb-6.2.0.min.js "></script>
+<script src="knockout-3.4.2.js "></script>
+<script src="sweetalert.min.js "></script>
+<script src="data.js "></script>
+<script src="orecord.js "></script>
+<script src="client.js "></script>
 
 </html>
