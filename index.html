@@ -56,14 +56,14 @@
   </header>
   <div class="commandBar">
     <div>
-      <p data-bind="visible:(!displayCaseUI())"><span id="newBtn" title="New Outage Case" class="fa fa-file" data-bind="visible:(!displayCaseUI()),click:newFileCommand"></span></p>
-      <p data-bind="visible:(!displayCaseUI())">
+      <p data-bind="visible:(!displayCaseUI() && !displayFieldUI())"><span id="newBtn" title="New Outage Case" class="fa fa-file" data-bind="visible:(!displayCaseUI() && !displayFieldUI()),click:newFileCommand"></span></p>
+      <p data-bind="visible:(!displayCaseUI() && !displayFieldUI())">
         <input type="text" data-bind="textInput:searchTerm,event:{keypress:searchKeyPress}" /><span id="searchBtn" title="Find Case"
           class="fa fa-search" data-bind="click:searchCommand"></span>
       </p>
-      <span id="cancelBtn" title="Cancel" class="fa fa-chevron-left" data-bind="visible:displayCaseUI,click:cancelCommand"></span>
-      <span id="saveBtn" title="Save Record" class="fa fa-floppy-o" data-bind="visible:displayCaseUI,click:saveCommand"></span>
-      <span id="closeBtn" title="Close Record" class="fa fa-check" data-bind="visible:displayCaseUI,click:closeCommand"></span>
+      <span id="cancelBtn" title="Cancel" class="fa fa-chevron-left" data-bind="visible:(displayCaseUI() || displayFieldUI()),click:cancelCommand"></span>
+      <span id="saveBtn" title="Save Record" class="fa fa-floppy-o" data-bind="visible:(displayCaseUI() || displayFieldUI()),click:saveCommand"></span>
+      <span id="closeBtn" title="Close Record" class="fa fa-check" data-bind="visible:(displayCaseUI() || displayFieldUI()),click:closeCommand"></span>
     </div>
   </div>
   <div id="caseUI" data-bind="visible:displayCaseUI">
@@ -139,7 +139,7 @@
     </section>
   </div>
 
-  <div id="searchResults" data-bind="visible:((!displayCaseUI()) && searchResults().length)">
+  <div id="searchResults" data-bind="visible:((!displayCaseUI()) && (!displayFieldUI()) && searchResults().length)">
     <h2>Search Results</h2>
     <table>
       <thead>
@@ -149,21 +149,44 @@
           <th>Outage ID</th>
           <th>Owner</th>
           <th>Assignee</th>
-          <th>Date</th>
+          <th colspan="2">Date</th>
         </tr>
       </thead>
       <tbody data-bind=" foreach:searchResults ">
-        <tr data-bind="click:$root.loadCommand">
-          <td><span class="fa fa-folder-open " data-bind="text:score "></span></td>
+        <tr>
+          <td data-bind="click:$root.loadCommand"><span class="fa fa-folder-open " data-bind="text:score "></span></td>
           <td><span data-bind="text:value.caseId "></span></td>
           <td><span data-bind="text:value.outageID "></span></td>
           <td><span data-bind="text:value.outageOwner "></span></td>
           <td><span data-bind="text:value.assignee "></span></td>
           <td><span data-bind="text:value.activityDate "></span></td>
+          <td><span class="fa fa-external-link" data-bind="click:$root.fieldLoadCommand"></span></td>
         </tr>
       </tbody>
     </table>
   </div>
+
+  <div id="fieldDataForm" data-bind="visible:displayFieldUI">
+    <section>
+      <h2>Cover</h2>
+      <div class="block" data-bind="with:CaseCover">
+        <label> Case Id<span data-bind="text:caseId"></span></label>
+        <label> Outage Number <span data-bind="text:outageID" ></span></label>
+        <label> Record Date<span data-bind="text:recordDate"></span></label>
+        <label> Outage Owner<span data-bind="text:outageOwner"></span></label>
+        <label> Business Unit<span data-bind="text:businessUnit" ></span></label>
+        <label> Activity Date<span data-bind="text:activityDate" ></span></label>
+        <label> Activity Duration<span data-bind="text:activityDuration" ></span></label>
+        <label> Assignee<span data-bind="text:assignee" ></span></label>
+        <label> Description<pre data-bind="text:activityDescription"></pre></label>
+        <label> Address <pre data-bind="text:address" ></pre></label>
+      </div>
+    </section>
+    <section>
+      <h2>Site Notes</h2>
+    </section>
+  </div>
+
   <!-- <section>
       <h2>Materials</h2>
     </section>

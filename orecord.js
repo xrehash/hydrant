@@ -14,6 +14,7 @@ var OutageRecordT = {
     });
 
     self.displayCaseUI = ko.observable(false)
+    self.displayFieldUI = ko.observable(false)
     self.searchTerm = ko.observable()
     self.searchResults = ko.observableArray()
     self.searchKeyPress = function (datum, event) {
@@ -154,10 +155,12 @@ var OutageRecordT = {
     }
     self.cancelCommand = function () {
       self.displayCaseUI(false)
+      self.displayFieldUI(false)
     }
     self.closeCommand = function () {
       self.saveCommand()
       self.displayCaseUI(false)
+      self.displayFieldUI(false)
     }
 
     self.searchCommand = function () {
@@ -210,8 +213,17 @@ var OutageRecordT = {
 
         self.displayCaseUI(true)
       })
-
     }
+    self.fieldLoadCommand = function (target) {
+      var bag = Portal.get(target.id)
+      bag.then(function (doc) {
+        console.log(doc)
+        self.load(doc)
+
+        self.displayFieldUI(true)
+      })
+    }
+
 
     self.saveCommand = function () {
       function stripFunctions(obj) {

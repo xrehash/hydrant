@@ -2,7 +2,7 @@
   font-family: 'Michroma';
   font-style: normal;
   font-weight: 400;
-  src: local('Michroma'), url('./michroma.ttf');
+  src: local('Michroma'), url('./Michroma.ttf');
   unicode-range: U+0000-00FF, U+0131, U+0152-0153, U+02C6, U+02DA, U+02DC, U+2000-206F, U+2074, U+20AC, U+2212, U+2215;
 }
 
@@ -205,6 +205,10 @@ li {
   font-size: 14pt;
 }
 
+#searchResults .fa:hover {
+  color: lime;
+}
+
 #searchResults td,
 #searchResults th,
 #searchResults tr {
@@ -217,4 +221,22 @@ li {
   color: white;
   background-color: rgb(20, 50, 200);
   cursor: pointer;
+}
+
+#fieldDataForm label {
+  font-family: 'Open Sans', 'Helvetica Neue', Arial, sans-serif;
+  font-size: 10pt;
+  font-weight: 400;
+  display: inline-block;
+  vertical-align: top;
+  margin-right: 10px;
+  color: #999;
+}
+
+#fieldDataForm label>span {
+  display: block;
+  min-height: 3ex;
+  font-size: 12pt;
+  font-weight: 500;
+  color: #000;
 }
