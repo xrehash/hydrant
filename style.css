@@ -223,7 +223,7 @@ li {
   cursor: pointer;
 }
 
-#fieldDataForm label {
+#fieldDataForm .coverView label {
   font-family: 'Open Sans', 'Helvetica Neue', Arial, sans-serif;
   font-size: 10pt;
   font-weight: 400;
@@ -233,7 +233,7 @@ li {
   color: #999;
 }
 
-#fieldDataForm label>span {
+#fieldDataForm .coverView label>span {
   display: block;
   min-height: 3ex;
   font-size: 12pt;

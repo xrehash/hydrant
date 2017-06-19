@@ -7,11 +7,11 @@ var OutageRecordT = {
     //console.log(ko);
     var self = this
     self.geoLocation = ko.observable()
-    navigator.geolocation && navigator.geolocation.getCurrentPosition(function (ok) {
+    /*navigator.geolocation && navigator.geolocation.getCurrentPosition(function (ok) {
       self.geoLocation(ok)
     }, function (err) {
       console.log(err)
-    });
+    });*/
 
     self.displayCaseUI = ko.observable(false)
     self.displayFieldUI = ko.observable(false)
@@ -32,10 +32,21 @@ var OutageRecordT = {
     self.adds = ko.observableArray()
     self.CaseCover = ko.observable()
     self.Scope = ko.observable()
+    self.FieldData = ko.observable()
 
     self.attached = ko.computed(function () {
       return Object.getOwnPropertyNames(self._attachments())
     })
+
+    self.addRow = function () {
+      self.Scope().activityList.push(ko.observable({
+        task: ko.observable(0),
+        work: ko.observable(""),
+        duration: ko.observable(""),
+        worker: ko.observable(""),
+        status: ko.observable("open")
+      }))
+    }
 
     self.init = function () {
       self._id((new Date()).toISOString())
@@ -65,17 +76,19 @@ var OutageRecordT = {
         requirementsEquipment: ko.observableArray(),
         notes: ko.observable(),
         uploadedFileName: ko.observable(),
-        addActivityRow: function () {
-          self.Scope().activityList.push({
-            task: 0,
-            work: "",
-            duration: "",
-            worker: ""
-          })
-        },
+        addActivityRow: self.addRow,
         removeActivityRow: function (data) {
           self.Scope().activityList.remove(data)
         }
+      })
+      self.FieldData({
+        arrivalDate: ko.observable(),
+        arrivalTime: ko.observable(),
+        allMaterial: ko.observable(),
+        allEquipment: ko.observable(),
+        switchOrderNumber: ko.observable(),
+        departureTime: ko.observable(),
+        fieldNotes: ko.observable()
       })
     }
     self.load = function (doc) {
@@ -105,25 +118,38 @@ var OutageRecordT = {
 
       self.Scope({
         terms: ko.observable(doc.scope.terms),
-        activityList: ko.observableArray(doc.scope.activityList),
+        activityList: ko.observableArray(doc.scope.activityList.map(function (e) {
+          var names = Object.getOwnPropertyNames(e);
+          var obs = {}
+          for (let i = 0; i < names.length; i++) {
+            obs[names[i]] = ko.observable(e[names[i]])
+          }
+          if (!obs.status) {
+            obs['status'] = ko.observable("open")
+          }
+          return ko.observable(obs);
+        })),
         requirementsSafety: ko.observableArray(doc.scope.requirementsSafety),
         requirementsSkills: ko.observableArray(doc.scope.requirementsSkills),
         requirementsEquipment: ko.observableArray(doc.scope.requirementsEquipment),
         notes: ko.observable(doc.scope.notes),
         uploadedFileName: ko.observable(doc.scope.uploadedFileName),
-        addActivityRow: function () {
-          self.Scope().activityList.push({
-            task: 0,
-            work: "",
-            duration: "",
-            worker: ""
-          })
-        },
+        addActivityRow: self.addRow,
         removeActivityRow: function (data) {
           self.Scope().activityList.remove(data)
         }
       })
     }
+    self.toggleStatus = function (data) {
+      //console.log(data, data.status())
+      var ActivityStatusT = ["open", "partial", "done"];
+      var idx = ActivityStatusT.indexOf(data.status())
+      //console.log(idx, ActivityStatusT[idx])
+      data.status(ActivityStatusT[(idx + 1) % 3])
+      //console.log(data, data.status())
+    };
+
+    self.addCrewRow = function () {}
 
     self.activityFileUpload = function (data) {
       if (window.File && window.FileReader) {

@@ -149,7 +149,7 @@
           <th>Outage ID</th>
           <th>Owner</th>
           <th>Assignee</th>
-          <th colspan="2">Date</th>
+          <th colspan="2">Work Date</th>
         </tr>
       </thead>
       <tbody data-bind=" foreach:searchResults ">
@@ -170,7 +170,7 @@
     <section>
       <h2>Cover</h2>
       <div class="block">
-        <div data-bind="with:CaseCover">
+        <div class="coverView" data-bind="with:CaseCover">
           <label> Case Id<span data-bind="text:caseId"></span></label>
           <label> Outage Number <span data-bind="text:outageID" ></span></label>
           <label> Record Date<span data-bind="text:recordDate"></span></label>
@@ -186,6 +186,7 @@
         <table data-bind="with:Scope">
           <thead>
             <tr>
+              <th></th>
               <th>Task</th>
               <th>Work/Description</th>
               <th>Duration</th>
@@ -194,6 +195,9 @@
           </thead>
           <tbody data-bind="foreach:activityList">
             <tr>
+              <td data-bind='click:$root.toggleStatus'><span class="fa" data-bind='css:{"fa-square-o": (status() == "open"), "fa-asterisk":(status() == "partial"), "fa-check":(status() == "done")}'></span>
+                <span data-bind='text:status'></span>
+              </td>
               <td data-bind="text:task"></td>
               <td data-bind="text:work"></td>
               <td data-bind="text:duration"></td>
@@ -203,8 +207,44 @@
         </table>
       </div>
     </section>
+    <section class="form">
+      <h2>Attachments</h2>
+      <div class="block">
+        <ul data-bind="foreach:attached">
+          <li><label> <span data-bind="text:$data"></span></label></li>
+        </ul>
+      </div>
+    </section>
     <section>
-      <h2>Site Notes</h2>
+      <h2>Field Data</h2>
+      <div class="block">
+        <div class="form" data-bind='with:FieldData'>
+          <label> Date <input type="date" data-bind='value:arrivalDate' /> Time <input type="time" data-bind='value:arrivalTime' /></label>
+          <label> Switching Order Number <input type="text" name="switchOrderNumber" data-bind='text:switchOrderNumber' /></label>
+          <label><span><input type="checkbox" name="allMaterial" data-bind='checked:allMaterial'/> All Material Available</span></label>
+          <label><span><input type="checkbox" name="allEquipment" data-bind='checked:allEquipment' /> All Equipment</span></label>
+          <div>
+            <h4>Crew List</h4>
+            <table class="table table-bordered table-compact" title="Activities">
+              <tr>
+                <th class="count">No.</th>
+                <th>Work/Description</th>
+                <th>Duration</th>
+                <th>Assignee/Skill</th>
+              </tr>
+              <tbody>
+              </tbody>
+              <tr>
+                <td colspan="4"><button class="fill" data-bind="click:$root.addCrewRow">ADD A ROW</button></td>
+              </tr>
+            </table>
+
+          </div>
+          <label> Notes <textarea name="fieldNotes" data-bind='value:fieldNotes'></textarea> </label>
+          <label> Departure Time <input type="time" name="departureTime" data-bind='value:departureTime' /></label>
+
+        </div>
+      </div>
     </section>
   </div>
 
