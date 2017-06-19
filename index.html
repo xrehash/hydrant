@@ -169,17 +169,38 @@
   <div id="fieldDataForm" data-bind="visible:displayFieldUI">
     <section>
       <h2>Cover</h2>
-      <div class="block" data-bind="with:CaseCover">
-        <label> Case Id<span data-bind="text:caseId"></span></label>
-        <label> Outage Number <span data-bind="text:outageID" ></span></label>
-        <label> Record Date<span data-bind="text:recordDate"></span></label>
-        <label> Outage Owner<span data-bind="text:outageOwner"></span></label>
-        <label> Business Unit<span data-bind="text:businessUnit" ></span></label>
-        <label> Activity Date<span data-bind="text:activityDate" ></span></label>
-        <label> Activity Duration<span data-bind="text:activityDuration" ></span></label>
-        <label> Assignee<span data-bind="text:assignee" ></span></label>
-        <label> Description<pre data-bind="text:activityDescription"></pre></label>
-        <label> Address <pre data-bind="text:address" ></pre></label>
+      <div class="block">
+        <div data-bind="with:CaseCover">
+          <label> Case Id<span data-bind="text:caseId"></span></label>
+          <label> Outage Number <span data-bind="text:outageID" ></span></label>
+          <label> Record Date<span data-bind="text:recordDate"></span></label>
+          <label> Outage Owner<span data-bind="text:outageOwner"></span></label>
+          <label> Business Unit<span data-bind="text:businessUnit" ></span></label>
+          <label> Activity Date<span data-bind="text:activityDate" ></span></label>
+          <label> Activity Duration<span data-bind="text:activityDuration" ></span></label>
+          <label> Assignee<span data-bind="text:assignee" ></span></label>
+          <label> Description<pre data-bind="text:activityDescription"></pre></label>
+          <label> Address <pre data-bind="text:address" ></pre></label>
+        </div>
+        <h4>Activity List</h4>
+        <table data-bind="with:Scope">
+          <thead>
+            <tr>
+              <th>Task</th>
+              <th>Work/Description</th>
+              <th>Duration</th>
+              <th>Assignee/Skill</th>
+            </tr>
+          </thead>
+          <tbody data-bind="foreach:activityList">
+            <tr>
+              <td data-bind="text:task"></td>
+              <td data-bind="text:work"></td>
+              <td data-bind="text:duration"></td>
+              <td data-bind="text:worker"></td>
+            </tr>
+          </tbody>
+        </table>
       </div>
     </section>
     <section>

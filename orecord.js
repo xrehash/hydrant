@@ -165,6 +165,7 @@ var OutageRecordT = {
 
     self.searchCommand = function () {
       var TargetFields = ["caseId", "outageID", "outageOwner", "assignee", "activityDate"]
+      if (!self.searchTerm()) return
       var term = self.searchTerm().toLowerCase()
       var search = Portal.caseQuery(term);
 
